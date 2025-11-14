@@ -138,15 +138,41 @@
             text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
 
+        .login-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        .tab-button {
+            padding: 12px 25px;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            color: white;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .tab-button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .tab-button.active {
+            background: var(--secondary);
+            color: var(--dark);
+            border-color: var(--secondary);
+        }
+
         .login-container {
             display: flex;
-            gap: 30px;
             justify-content: center;
-            flex-wrap: wrap;
         }
 
         .login-panel {
-            flex: 1;
             min-width: 300px;
             max-width: 450px;
             background: var(--glass);
@@ -157,6 +183,11 @@
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
             animation: fadeInUp 0.8s ease-out;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: none;
+        }
+
+        .login-panel.active {
+            display: block;
         }
 
         .login-panel:hover {
@@ -300,13 +331,18 @@
                 width: 95%;
                 padding: 10px;
             }
-            .login-container {
-                flex-direction: column;
-                align-items: center;
+            .login-tabs {
+                display: none;
             }
             .login-panel {
                 width: 100%;
                 max-width: 400px;
+            }
+            #staff-panel {
+                display: block;
+            }
+            #student-panel, #admin-panel {
+                display: none;
             }
             h1 {
                 font-size: 1.8rem;
@@ -329,29 +365,36 @@
             <h2>WI-FI ACCESS PORTAL</h2>
         </header>
 
+        <div class="login-tabs">
+            <button class="tab-button" data-panel="staff-panel">Staff/Guest</button>
+            <button class="tab-button" data-panel="student-panel">Student</button>
+            <button class="tab-button" data-panel="admin-panel">Administrator</button>
+        </div>
+
         <div class="login-container">
-            <div class="login-panel">
-                <h3 class="panel-title">STUDENT ACCESS</h3>
-                <form id="voucher-form">
+            <div id="staff-panel" class="login-panel active">
+                <h3 class="panel-title">STAFF/GUEST ACCESS</h3>
+                <form id="staff-form">
                     <div class="form-group">
-                        <input type="text" id="voucher-code" class="form-control" placeholder="Enter Voucher Code" required>
+                        <input type="text" id="staff-voucher-code" class="form-control" placeholder="Enter Voucher Code" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Connect</button>
                     <p class="info-text">Enter the voucher code provided by the administration</p>
                 </form>
             </div>
-            <div class="login-panel">
-                <h3 class="panel-title">STAFF/GUEST ACCESS</h3>
-                <form id="voucher-form">
+            
+            <div id="student-panel" class="login-panel">
+                <h3 class="panel-title">STUDENT ACCESS</h3>
+                <form id="student-form">
                     <div class="form-group">
-                        <input type="text" id="voucher-code" class="form-control" placeholder="Enter Voucher Code" required>
+                        <input type="text" id="student-voucher-code" class="form-control" placeholder="Enter Voucher Code" required>
                     </div>
                     <button type="submit" class="btn btn-primary">Connect</button>
                     <p class="info-text">Enter the voucher code provided by the administration</p>
                 </form>
             </div>
 
-            <div class="login-panel">
+            <div id="admin-panel" class="login-panel">
                 <h3 class="panel-title">ADMINISTRATOR LOGIN</h3>
                 <form id="admin-form">
                     <div class="form-group">
@@ -412,10 +455,26 @@
             }, 3000);
         }
         
-        document.getElementById('voucher-form').addEventListener('submit', function(event) {
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const panelId = this.getAttribute('data-panel');
+                
+                document.querySelectorAll('.tab-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                this.classList.add('active');
+                
+                document.querySelectorAll('.login-panel').forEach(panel => {
+                    panel.classList.remove('active');
+                });
+                document.getElementById(panelId).classList.add('active');
+            });
+        });
+        
+        document.getElementById('staff-form').addEventListener('submit', function(event) {
             event.preventDefault();
             
-            const voucherCode = document.getElementById('voucher-code').value.trim();
+            const voucherCode = document.getElementById('staff-voucher-code').value.trim();
             
             if (voucherCode) {
                 showNotification('Connecting to network...', 'info');
@@ -423,7 +482,28 @@
                 setTimeout(() => {
                     if (voucherCode.length >= 6) {
                         showNotification('Successfully connected to Wi-Fi!', 'success');
-                        document.getElementById('voucher-code').value = '';
+                        document.getElementById('staff-voucher-code').value = '';
+                    } else {
+                        showNotification('Invalid voucher code. Please try again.', 'error');
+                    }
+                }, 1500);
+            } else {
+                showNotification('Please enter a voucher code.', 'error');
+            }
+        });
+        
+        document.getElementById('student-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const voucherCode = document.getElementById('student-voucher-code').value.trim();
+            
+            if (voucherCode) {
+                showNotification('Connecting to network...', 'info');
+                
+                setTimeout(() => {
+                    if (voucherCode.length >= 6) {
+                        showNotification('Successfully connected to Wi-Fi!', 'success');
+                        document.getElementById('student-voucher-code').value = '';
                     } else {
                         showNotification('Invalid voucher code. Please try again.', 'error');
                     }
