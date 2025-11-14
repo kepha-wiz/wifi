@@ -143,6 +143,7 @@
             justify-content: center;
             margin-bottom: 30px;
             gap: 15px;
+            flex-wrap: wrap;
         }
 
         .tab-button {
@@ -331,18 +332,9 @@
                 width: 95%;
                 padding: 10px;
             }
-            .login-tabs {
-                display: none;
-            }
             .login-panel {
                 width: 100%;
                 max-width: 400px;
-            }
-            #staff-panel {
-                display: block;
-            }
-            #student-panel, #admin-panel {
-                display: none;
             }
             h1 {
                 font-size: 1.8rem;
@@ -366,7 +358,7 @@
         </header>
 
         <div class="login-tabs">
-            <button class="tab-button" data-panel="staff-panel">Staff/Guest</button>
+            <button class="tab-button active" data-panel="staff-panel">Staff/Guest</button>
             <button class="tab-button" data-panel="student-panel">Student</button>
             <button class="tab-button" data-panel="admin-panel">Administrator</button>
         </div>
